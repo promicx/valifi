@@ -67,6 +67,19 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     protected OnPropertyChangedCallback mCallback = setupOnPropertyChangedCallback();
     final Runnable mNotifyErrorRunnable = setupNotifyErrorRunnable();
 
+    private String mText;
+
+    @Nullable
+    @Bindable
+    public String getText() {
+        return mText;
+    }
+
+    public void setText(@Nullable String text) {
+        mText = text;
+        notifyPropertyChanged(com.mlykotom.valifi.BR.text);
+    }
+
     public interface PropertyValidator<T> {
         /**
          * Decides whether field will be valid based on return value.
@@ -272,7 +285,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mError = null;
         mInProgress = false;
         mIsChanged = false;
-
+        setText("");
         setValue("");
         notifyValidationChanged();
         refreshError();

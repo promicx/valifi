@@ -207,6 +207,33 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         return !mInProgress & !mIsError & (mIsChanged | mIsEmptyAllowed);
     }
 
+    @Bindable
+    @Override
+    public Boolean getHasError() {
+        return mIsError && !mIsChanged;
+    }
+
+    @Override
+    public void resetError() {
+        mIsResetting = true;
+        mIsError = false;
+        mError = null;
+        mInProgress = false;
+        mIsChanged = false;
+
+        notifyValidationChanged();
+        refreshError();
+        mIsResetting = false;
+    }
+
+    public void clearValidator() {
+        mPropertyValidators.clear();
+        mIsError = false;
+        mError = null;
+        notifyValidationChanged();
+        refreshError();
+    }
+
     /**
      * Removes property change callback and clears custom validators
      */
@@ -569,7 +596,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     @Override
     public void refreshError() {
         notifyPropertyChanged(com.mlykotom.valifi.BR.error);
-        notifyPropertyChanged(com.mlykotom.valifi.BR.isError);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.hasError);
     }
 
     /**

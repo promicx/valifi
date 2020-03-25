@@ -53,6 +53,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     @Nullable
     String mLastError;
     volatile boolean mInProgress = false;
+    volatile boolean mIsChecked = false;
     volatile long mDueTime = -1;
     volatile boolean mLastIsError = true;
     volatile boolean mIsError = false;
@@ -217,13 +218,13 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     @Bindable
     @Override
     public boolean isValid() {
-        return !mInProgress & !mIsError & (mIsChanged | mIsEmptyAllowed);
+        return mIsChecked && !mInProgress & !mIsError & (mIsChanged | mIsEmptyAllowed);
     }
 
     @Bindable
     @Override
     public Boolean getHasError() {
-        return mIsError && !mIsChanged;
+        return mIsChecked && mIsError;
     }
 
     @Override
@@ -233,6 +234,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mError = null;
         mInProgress = false;
         mIsChanged = false;
+        mIsChecked = false;
 
         notifyValidationChanged();
         refreshError();
@@ -243,6 +245,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mPropertyValidators.clear();
         mIsError = false;
         mError = null;
+        mInProgress = false;
+        mInProgress = false;
         notifyValidationChanged();
         refreshError();
     }
@@ -273,6 +277,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mIsChanged = false;
         mIsError = false;
         mIsEmptyAllowed = false;
+        mIsChecked = false;
     }
 
     /**
@@ -285,6 +290,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mError = null;
         mInProgress = false;
         mIsChanged = false;
+        mIsChecked = false;
         setText("");
         setValue("");
         notifyValidationChanged();
@@ -297,6 +303,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     @Override
     public void validate() {
+        mIsChecked = true;
         notifyValueChanged(true);
         refreshError();
     }
@@ -683,7 +690,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     protected void notifyValidationChanged() {
         notifyPropertyChanged(com.mlykotom.valifi.BR.valid);
-        notifyPropertyChanged(com.mlykotom.valifi.BR.isError);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.hasError);
         if (mParentForm != null) {
             mParentForm.notifyValidationChanged(this);
         }

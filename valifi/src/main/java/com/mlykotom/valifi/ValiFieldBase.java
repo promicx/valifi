@@ -224,7 +224,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     @Bindable
     @Override
     public Boolean getHasError() {
-        return mIsChecked && mIsError;
+        if (!mIsChecked) return false;
+        return mIsError;
     }
 
     @Override

@@ -68,6 +68,9 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     protected OnPropertyChangedCallback mCallback = setupOnPropertyChangedCallback();
     final Runnable mNotifyErrorRunnable = setupNotifyErrorRunnable();
 
+    private OnFieldChangeListener onFieldTextChange;
+    private OnFieldChangeListener onFieldValueChange;
+
     private String mText;
 
     @Nullable
@@ -79,6 +82,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     public void setText(@Nullable String text) {
         mText = text;
         notifyPropertyChanged(com.mlykotom.valifi.BR.text);
+        if (onFieldTextChange == null) return;
+        onFieldTextChange.onFieldChange();
     }
 
     public interface PropertyValidator<T> {
@@ -381,9 +386,10 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     public void set(@Nullable ValueType value) {
         if ((value == mValue) || (value != null && value.equals(mValue))) return;
-
         mValue = value;
         notifyValueChanged(false);
+        if (onFieldValueChange == null) return;
+        onFieldValueChange.onFieldChange();
     }
 
     /**
@@ -866,5 +872,13 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
                 checkAsyncValidatorsIfAny();
             }
         };
+    }
+
+    public void setOnFieldTextChange(OnFieldChangeListener onFieldTextChange) {
+        this.onFieldTextChange = onFieldTextChange;
+    }
+
+    public void setOnFieldValueChange(OnFieldChangeListener onFieldValueChange) {
+        this.onFieldValueChange = onFieldValueChange;
     }
 }

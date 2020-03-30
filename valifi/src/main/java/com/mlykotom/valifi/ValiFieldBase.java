@@ -15,6 +15,7 @@ import com.mlykotom.valifi.exceptions.ValiFiException;
 import com.mlykotom.valifi.exceptions.ValiFiValidatorException;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,11 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings("unused")
 public abstract class ValiFieldBase<ValueType> extends BaseObservable implements ValiFiValidable {
+
+    private enum FieldType {
+        TEXT, VALUE
+    }
+
     @Nullable
     protected ValueType mValue;
     protected boolean mIsEmptyAllowed = false;
@@ -39,6 +45,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     protected LinkedHashMap<PropertyValidator<ValueType>, String> mPropertyValidators = new LinkedHashMap<>();
     @Nullable
     protected LinkedHashMap<AsyncPropertyValidator<ValueType>, String> mAsyncPropertyValidators;
+
+    private IdentityHashMap<OnFieldChangeListener, FieldType> mOnFieldChanges = new IdentityHashMap<>();
     // --- delaying times
     protected long mErrorDelay;
     protected long mAsyncValidationDelay;
@@ -68,9 +76,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     protected OnPropertyChangedCallback mCallback = setupOnPropertyChangedCallback();
     final Runnable mNotifyErrorRunnable = setupNotifyErrorRunnable();
 
-    private OnFieldChangeListener onFieldTextChange;
-    private OnFieldChangeListener onFieldValueChange;
-
     private String mText;
 
     @Nullable
@@ -82,8 +87,12 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     public void setText(@Nullable String text) {
         mText = text;
         notifyPropertyChanged(com.mlykotom.valifi.BR.text);
-        if (onFieldTextChange == null) return;
-        onFieldTextChange.onFieldChange();
+        if (mOnFieldChanges.isEmpty()) return;
+        for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
+            if (entry.getValue() == FieldType.TEXT && entry.getKey() != null) {
+                entry.getKey().onFieldChange();
+            }
+        }
     }
 
     public interface PropertyValidator<T> {
@@ -284,6 +293,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mIsError = false;
         mIsEmptyAllowed = false;
         mIsChecked = false;
+        removeAllOnFieldChange();
     }
 
     /**
@@ -388,8 +398,11 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         if ((value == mValue) || (value != null && value.equals(mValue))) return;
         mValue = value;
         notifyValueChanged(false);
-        if (onFieldValueChange == null) return;
-        onFieldValueChange.onFieldChange();
+        for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
+            if (entry.getValue() == FieldType.VALUE && entry.getKey() != null) {
+                entry.getKey().onFieldChange();
+            }
+        }
     }
 
     /**
@@ -874,11 +887,23 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         };
     }
 
-    public void setOnFieldTextChange(OnFieldChangeListener onFieldTextChange) {
-        this.onFieldTextChange = onFieldTextChange;
+    public void addOnFieldTextChange(OnFieldChangeListener l) {
+        if (mOnFieldChanges.containsKey(l)) return;
+        mOnFieldChanges.put(l, FieldType.TEXT);
     }
 
-    public void setOnFieldValueChange(OnFieldChangeListener onFieldValueChange) {
-        this.onFieldValueChange = onFieldValueChange;
+    public void addOnFieldValueChange(OnFieldChangeListener l) {
+        if (mOnFieldChanges.containsKey(l)) return;
+        mOnFieldChanges.put(l, FieldType.VALUE);
+    }
+
+    public void removeOnFieldChange(OnFieldChangeListener l) {
+        if (mOnFieldChanges.isEmpty()) return;
+        mOnFieldChanges.remove(l);
+    }
+
+    public void removeAllOnFieldChange() {
+        if (mOnFieldChanges.isEmpty()) return;
+        mOnFieldChanges.clear();
     }
 }

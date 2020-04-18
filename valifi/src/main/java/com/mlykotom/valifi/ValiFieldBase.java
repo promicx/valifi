@@ -78,7 +78,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     final Runnable mNotifyErrorRunnable = setupNotifyErrorRunnable();
 
     private String mText;
-    private boolean mEnable;
+    private boolean mEnable = true;
 
     @Bindable
     public boolean isEnable() {
@@ -86,6 +86,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     }
 
     public void setEnable(boolean enable) {
+        if (enable == mEnable) return;
         this.mEnable = enable;
         notifyPropertyChanged(com.mlykotom.valifi.BR.enable);
         if (mOnFieldChanges.isEmpty()) return;
@@ -781,7 +782,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * @return true if all validators are valid, false if any of them is invalid
      */
     boolean checkBlockingValidators() {
-        if (mPropertyValidators.isEmpty())return true;
+        if (mPropertyValidators.isEmpty()) return true;
         for (Map.Entry<PropertyValidator<ValueType>, String> entry : mPropertyValidators.entrySet()) {
             // all of setup validators must be valid, otherwise error
             if (!entry.getKey().isValid(mValue)) {

@@ -104,7 +104,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     }
 
     public void setText(@Nullable String text) {
-        if (Objects.equals(text, mText)) return;
+        if ((Objects.equals(text, mText)) || (text != null && Objects.equals(text, mText))) return;
         mText = text;
         notifyPropertyChanged(com.mlykotom.valifi.BR.text);
         if (mOnFieldChanges.isEmpty()) return;
@@ -415,7 +415,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * @param value to be set and notified about change
      */
     public void set(@Nullable ValueType value) {
-        if (Objects.equals(value, mValue)) return;
+        if (Objects.equals(value, mValue) || (value != null && Objects.equals(value, mValue)))
+            return;
         mValue = value;
         notifyValueChanged(false);
         for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {

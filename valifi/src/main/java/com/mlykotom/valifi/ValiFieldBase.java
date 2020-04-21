@@ -19,6 +19,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class ValiFieldBase<ValueType> extends BaseObservable implements ValiFiValidable {
 
     private enum FieldType {
-        TEXT, VALUE
+        TEXT, VALUE, ENABLE
     }
 
     @Nullable
@@ -77,6 +78,24 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     final Runnable mNotifyErrorRunnable = setupNotifyErrorRunnable();
 
     private String mText;
+    private boolean mEnable = true;
+
+    @Bindable
+    public boolean isEnable() {
+        return mEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        if (enable == mEnable) return;
+        this.mEnable = enable;
+        notifyPropertyChanged(com.mlykotom.valifi.BR.enable);
+        if (mOnFieldChanges.isEmpty()) return;
+        for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
+            if (entry.getValue() == FieldType.ENABLE && entry.getKey() != null) {
+                entry.getKey().onFieldChange();
+            }
+        }
+    }
 
     @Nullable
     @Bindable
@@ -85,6 +104,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     }
 
     public void setText(@Nullable String text) {
+        if (Objects.equals(text, mText)) return;
         mText = text;
         notifyPropertyChanged(com.mlykotom.valifi.BR.text);
         if (mOnFieldChanges.isEmpty()) return;
@@ -395,7 +415,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * @param value to be set and notified about change
      */
     public void set(@Nullable ValueType value) {
-        if ((value == mValue) || (value != null && value.equals(mValue))) return;
+        if (Objects.equals(value, mValue)) return;
         mValue = value;
         notifyValueChanged(false);
         for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
@@ -762,6 +782,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * @return true if all validators are valid, false if any of them is invalid
      */
     boolean checkBlockingValidators() {
+        if (mPropertyValidators.isEmpty()) return true;
         for (Map.Entry<PropertyValidator<ValueType>, String> entry : mPropertyValidators.entrySet()) {
             // all of setup validators must be valid, otherwise error
             if (!entry.getKey().isValid(mValue)) {
@@ -895,6 +916,11 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     public void addOnFieldValueChange(OnFieldChangeListener l) {
         if (mOnFieldChanges.containsKey(l)) return;
         mOnFieldChanges.put(l, FieldType.VALUE);
+    }
+
+    public void addOnFieldEnableChange(OnFieldChangeListener l) {
+        if (mOnFieldChanges.containsKey(l)) return;
+        mOnFieldChanges.put(l, FieldType.ENABLE);
     }
 
     public void removeOnFieldChange(OnFieldChangeListener l) {

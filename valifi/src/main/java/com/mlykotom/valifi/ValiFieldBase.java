@@ -15,6 +15,7 @@ import com.mlykotom.valifi.exceptions.ValiFiException;
 import com.mlykotom.valifi.exceptions.ValiFiValidatorException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -575,6 +576,10 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * @return this, so validators can be chained
      */
     public ValiFieldBase<ValueType> addCustomValidator(String errorMessage, PropertyValidator<ValueType> validator) {
+        if (mPropertyValidators == null){
+            mPropertyValidators= new LinkedHashMap<>();
+        }
+
         mPropertyValidators.put(validator, errorMessage);
         if (mIsChanged) {
             notifyValueChanged(true);
@@ -783,7 +788,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * @return true if all validators are valid, false if any of them is invalid
      */
     boolean checkBlockingValidators() {
-        if (mPropertyValidators.isEmpty()) return true;
+        if (mPropertyValidators == null || mPropertyValidators.isEmpty()) return true;
         for (Map.Entry<PropertyValidator<ValueType>, String> entry : mPropertyValidators.entrySet()) {
             // all of setup validators must be valid, otherwise error
             if (!entry.getKey().isValid(mValue)) {

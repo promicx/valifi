@@ -95,6 +95,11 @@ public class ValiFiForm extends BaseObservable implements ValiFiValidable {
         mFields.add(field);
     }
 
+    public void removeField(ValiFiValidable field) {
+        field.destroy();
+        mFields.remove(field);
+    }
+
     /**
      * Notifies about error all fields in the form
      *

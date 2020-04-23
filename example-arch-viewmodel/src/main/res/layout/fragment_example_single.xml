@@ -1,110 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<data>
-		<import type="android.view.View" />
+    <data>
 
-		<variable
-			name="view"
-			type="com.mlykotom.example_arch_viewmodel.single.SingleValidationView" />
+        <import type="android.view.View" />
 
-		<variable
-			name="viewModel"
-			type="com.mlykotom.example_arch_viewmodel.single.SingleValidationViewModel" />
-	</data>
+        <variable
+            name="view"
+            type="com.mlykotom.example_arch_viewmodel.single.SingleValidationView" />
 
-	<androidx.core.widget.NestedScrollView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+        <variable
+            name="viewModel"
+            type="com.mlykotom.example_arch_viewmodel.single.SingleValidationViewModel" />
+    </data>
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginStart="8dp"
-			android:layout_marginEnd="8dp"
-			android:orientation="vertical">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				app:error="@{viewModel.username.error}"
-				app:errorEnabled="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
 
-				<com.google.android.material.textfield.TextInputEditText
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:hint="Username"
-					android:inputType="textPersonName"
-					android:text="@={viewModel.username.value}" />
-			</com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:error="@{viewModel.username.error}"
+                app:errorEnabled="true">
 
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:inputType="textPersonName"
+                    android:text="@={viewModel.username.value}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					app:error="@{viewModel.async.error}"
-					app:errorEnabled="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-					<com.google.android.material.textfield.TextInputEditText
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:hint='Asynchronous username ("User" is not allowed)'
-						android:inputType="textPersonName"
-						android:text="@={viewModel.async.value}" />
-				</com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:error="@{viewModel.async.error}"
+                    app:errorEnabled="true">
 
-				<ProgressBar
-					android:layout_width="20dp"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_vertical"
-					android:visibility="@{viewModel.async.inProgress ? View.VISIBLE : View.INVISIBLE}" />
-			</LinearLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint='Asynchronous username ("User" is not allowed)'
+                        android:inputType="textPersonName"
+                        android:text="@={viewModel.async.value}" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				app:error="@{viewModel.numLong.error}"
-				app:errorEnabled="true">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:error="@{viewModel.numLong.error}"
+                app:errorEnabled="true">
 
-				<com.google.android.material.textfield.TextInputEditText
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:hint='Number must be greater than 13'
-					android:text="@={viewModel.numLong.value}" />
-			</com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint='Number must be greater than 13'
+                    android:text="@={viewModel.numLong.value}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				app:error="@{viewModel.creditCard.error}"
-				app:errorEnabled="true">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:error="@{viewModel.creditCard.error}"
+                app:errorEnabled="true">
 
-				<com.google.android.material.textfield.TextInputEditText
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:hint='Type credit card number'
-					android:text="@={viewModel.creditCard.value}" />
-			</com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint='Type credit card number'
+                    android:text="@={viewModel.creditCard.value}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:enabled="@{viewModel.creditCard.valid &amp;&amp; viewModel.numLong.valid &amp;&amp; viewModel.username.valid &amp;&amp; viewModel.async.valid}"
-				android:onClick="@{() -> view.onSubmitClicked()}"
-				android:text="Submit" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="@{viewModel.creditCard.valid &amp;&amp; viewModel.numLong.valid &amp;&amp; viewModel.username.valid &amp;&amp; viewModel.async.valid}"
+                android:onClick="@{() -> view.onSubmitClicked()}"
+                android:text="Submit" />
 
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:onClick="@{() -> view.onExternalErrorClick()}"
-				android:text="External error" />
-		</LinearLayout>
-	</androidx.core.widget.NestedScrollView>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> view.onExternalErrorClick()}"
+                android:text="External error" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

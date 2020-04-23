@@ -44,14 +44,12 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     private IdentityHashMap<OnFieldChangeListener, FieldType> mOnFieldChanges = new IdentityHashMap<>();
     // --- delaying times
     protected long mErrorDelay;
-    boolean mIsChanged = false;
+    private boolean mIsChanged = false;
     @Nullable
-    String mError;
+    private String mError;
     @Nullable
-    String mLastError;
-    volatile boolean mInProgress = false;
+    private String mLastError;
     volatile boolean mIsChecked = false;
-    volatile long mDueTime = -1;
     volatile boolean mLastIsError = true;
     volatile boolean mIsError = false;
     // --- others
@@ -205,7 +203,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     @Bindable
     @Override
     public boolean isValid() {
-        return mIsChecked && !mInProgress & !mIsError & (mIsChanged | mIsEmptyAllowed);
+        return mIsChecked && !mIsError & (mIsChanged | mIsEmptyAllowed);
     }
 
     @Bindable
@@ -220,7 +218,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mIsResetting = true;
         mIsError = false;
         mError = null;
-        mInProgress = false;
         mIsChanged = false;
         mIsChecked = false;
 
@@ -233,8 +230,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mPropertyValidators.clear();
         mIsError = false;
         mError = null;
-        mInProgress = false;
-        mInProgress = false;
         notifyValidationChanged();
         refreshError();
     }
@@ -271,7 +266,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mIsResetting = true;
         mIsError = false;
         mError = null;
-        mInProgress = false;
         mIsChanged = false;
         mIsChecked = false;
         setText(null);
@@ -382,31 +376,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     public void setValue(@Nullable String value) {
         set(convertStringToValue(value));
-    }
-
-    /**
-     * Flag for showing whether async validators are in progress.
-     * It may be used for showing/hiding progress view, etc
-     *
-     * @return whether validation in progress
-     */
-    @Bindable
-    public boolean isInProgress() {
-        return mInProgress;
-    }
-
-    /**
-     * Sets the field that is in validating process (because of async validations)
-     * Notifies {@link #isValid()} which keeps it invalid when in progress.
-     *
-     * @param inProgress whether validates or not
-     */
-    protected synchronized void setInProgress(boolean inProgress) {
-        if (inProgress == mInProgress) return;
-
-        mInProgress = inProgress;
-        notifyPropertyChanged(BR.inProgress);
-        notifyValidationChanged();
     }
 
     /**
@@ -584,12 +553,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         mIsError = isError;
         mError = errorMessage;
         notifyValidationChanged();
-
-        if (mErrorDelay != ValiFiErrorDelay.NEVER.delayMillis) {
-            if (mErrorDelay > 0) {
-                mDueTime = System.currentTimeMillis() + mErrorDelay;
-            }
-        }
     }
 
     /**
@@ -630,21 +593,18 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
 
     /**
      * Checks synchronous validators one by one and sets error to the field if any of them is invalid
-     *
-     * @return true if all validators are valid, false if any of them is invalid
      */
-    private boolean checkBlockingValidators() {
-        if (mPropertyValidators == null || mPropertyValidators.isEmpty()) return true;
+    private void checkBlockingValidators() {
+        if (mPropertyValidators == null || mPropertyValidators.isEmpty()) return;
         for (Map.Entry<PropertyValidator<ValueType>, String> entry : mPropertyValidators.entrySet()) {
             if (!entry.getKey().isValid(mValue)) {
                 setIsError(true, entry.getValue());
-                return false;
+                return;
             }
         }
 
         // set valid
         setIsError(false, null);
-        return true;
     }
 
     private OnPropertyChangedCallback setupOnPropertyChangedCallback() {
@@ -662,12 +622,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
                     return;
                 }
 
-                setInProgress(true);
-
                 // ad 3) validating synchronous validators
-                if (!checkBlockingValidators()) {
-                    setInProgress(false);
-                }
+                checkBlockingValidators();
             }
         };
     }

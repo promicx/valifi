@@ -573,7 +573,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     protected void notifyValidationChanged() {
         notifyPropertyChanged(BR.valid);
-        notifyPropertyChanged(BR.hasError);
+        refreshError();
         if (mParentForm != null) {
             mParentForm.notifyValidationChanged(this);
         }

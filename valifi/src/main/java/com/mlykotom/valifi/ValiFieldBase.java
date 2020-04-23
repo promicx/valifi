@@ -119,11 +119,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     public ValiFieldBase(@Nullable ValueType defaultValue, boolean markAsChanged) {
         mErrorDelay = ValiFi.getErrorDelay();
-
         mValue = defaultValue;
-        if (defaultValue != null) {
-            mText = convertValueToString(mValue);
-        }
 
         if (defaultValue != null && markAsChanged) {
             mIsChanged = true;
@@ -344,11 +340,6 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
             return;
 
         mValue = value;
-        if (value != null) {
-            mText = convertValueToString(mValue);
-        } else {
-            mText = null;
-        }
         notifyValueChanged(false);
         for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
             if (entry.getValue() == FieldType.VALUE && entry.getKey() != null) {

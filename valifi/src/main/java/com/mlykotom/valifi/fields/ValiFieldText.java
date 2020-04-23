@@ -36,12 +36,6 @@ public class ValiFieldText extends ValiFieldBase<String> {
         return mValue;
     }
 
-    @Override
-    public void set(@Nullable String value) {
-        super.set(value);
-        super.setText(value);
-    }
-
     /**
      * Checking for specific type if value is empty.
      * Used for checking if empty is allowed.

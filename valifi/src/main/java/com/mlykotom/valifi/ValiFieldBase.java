@@ -199,13 +199,14 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     @Bindable
     @Override
     public boolean isValid() {
+        if (!mEnable) return true;
         return mIsChecked && !mIsError & (mIsChanged | mIsEmptyAllowed);
     }
 
     @Bindable
     @Override
     public Boolean getHasError() {
-        if (!mIsChecked) return false;
+        if (!mIsChecked || !mEnable) return false;
         return mIsError;
     }
 

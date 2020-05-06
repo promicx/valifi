@@ -9,7 +9,6 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.Observable;
-import androidx.databinding.library.baseAdapters.BR;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.mlykotom.valifi.exceptions.ValiFiValidatorException;
@@ -70,7 +69,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     public void setEnable(boolean enable) {
         if (enable == mEnable) return;
         this.mEnable = enable;
-        notifyPropertyChanged(BR.enable);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.enable);
         if (mOnFieldChanges.isEmpty()) return;
         for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
             if (entry.getValue() == FieldType.ENABLE && entry.getKey() != null) {
@@ -88,7 +87,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     public void setText(@Nullable String text) {
         if ((Objects.equals(text, mText)) || (text != null && Objects.equals(text, mText))) return;
         mText = text;
-        notifyPropertyChanged(BR.text);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.text);
         if (mOnFieldChanges.isEmpty()) return;
         for (Map.Entry<OnFieldChangeListener, FieldType> entry : mOnFieldChanges.entrySet()) {
             if (entry.getValue() == FieldType.TEXT && entry.getKey() != null) {
@@ -499,8 +498,8 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     @Override
     public void refreshError() {
-        notifyPropertyChanged(BR.error);
-        notifyPropertyChanged(BR.hasError);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.error);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.hasError);
     }
 
     /**
@@ -554,9 +553,9 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      */
     protected void notifyValueChanged(boolean isImmediate) {
         if (isImmediate) {
-            mCallback.onPropertyChanged(null, BR.value);
+            mCallback.onPropertyChanged(null, com.mlykotom.valifi.BR.value);
         } else {
-            notifyPropertyChanged(BR.value);
+            notifyPropertyChanged(com.mlykotom.valifi.BR.value);
         }
     }
 
@@ -564,7 +563,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * Notifies that field's validation flag changed
      */
     protected void notifyValidationChanged() {
-        notifyPropertyChanged(BR.valid);
+        notifyPropertyChanged(com.mlykotom.valifi.BR.valid);
         refreshError();
         if (mParentForm != null) {
             mParentForm.notifyValidationChanged(this);
@@ -603,7 +602,7 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
         return new OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable observable, int brId) {
-                if (brId != BR.value || mIsResetting) return;
+                if (brId != com.mlykotom.valifi.BR.value || mIsResetting) return;
 
                 // ad 1) notifying bound fields
                 notifyBoundFieldsValueChanged();

@@ -223,7 +223,11 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
     }
 
     public void clearValidator() {
-        mPropertyValidators.clear();
+        if (mPropertyValidators != null) {
+            mPropertyValidators.clear();
+            mPropertyValidators = null;
+        }
+
         mIsError = false;
         mError = null;
         notifyValidationChanged();
@@ -586,7 +590,11 @@ public abstract class ValiFieldBase<ValueType> extends BaseObservable implements
      * Checks synchronous validators one by one and sets error to the field if any of them is invalid
      */
     private void checkBlockingValidators() {
-        if (mPropertyValidators == null || mPropertyValidators.isEmpty()) return;
+        if (mPropertyValidators == null || mPropertyValidators.isEmpty()) {
+            setIsError(false, null);
+            return;
+        }
+
         for (Map.Entry<PropertyValidator<ValueType>, String> entry : mPropertyValidators.entrySet()) {
             if (!entry.getKey().isValid(mValue)) {
                 setIsError(true, entry.getValue());

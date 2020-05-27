@@ -1,5 +1,6 @@
 package com.mlykotom.valifi.fields;
 
+import android.util.Log;
 import android.util.Patterns;
 
 import androidx.annotation.NonNull;
@@ -202,7 +203,8 @@ public class ValiFieldText extends ValiFieldBase<String> {
         if (minLength > 0) {
             // checking empty or not empty
             if (mIsEmptyAllowed) {
-                throw new ValiFiValidatorException("Can't set empty validation when not empty validation set before (min length, range, etc)");
+                Log.e("Validator", "Can't set empty validation when not empty validation set before (min length, range, etc)");
+                return this;
             }
             mHasNotEmptyValidator = true;
         }
